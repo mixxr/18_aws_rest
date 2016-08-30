@@ -1,0 +1,20 @@
+{
+  "cart-items": [
+    {
+      "id": 1,
+      "name": "LG LED TV 40 3245DFG",
+      "price": 349,
+      "currency": "EUR",
+      "qty": 1,
+      "imgUrl": "1.jpg"
+    },
+    {
+      "id": 31,
+      "name": "Samsung LED TV 30 AZ30QWE",
+      "price": 179,
+      "currency": "EUR",
+      "qty": 1,
+      "imgUrl": "31.jpg"
+    }
+  ]
+}
