@@ -31,20 +31,16 @@
      <!-- todo: remove -->
       <div>
         <hr>
-        Name via form.controls = {{showFormControls(budgetForm)}}
+        Budget via form.controls = {{showFormControls(budgetForm)}}
       </div>
      <!-- - -->
     </form>
   </div>
 
   <div [hidden]="!submitted">
-    <h2>searching for you...</h2>
-    <div class="row">
-      <div class="col-xs-3">Budget</div>
-      <div class="col-xs-9  pull-left">{{ model.value }} {{model.currency}}</div>
-    </div>
+    <h2>searching to best fit your budget...{{ model.value }} {{model.currency}}</h2>
     <br>
-    <button class="btn btn-default" (click)="onEdit()">Edit</button>
+    <button class="btn btn-default" (click)="onEdit()">&lt; Change Budget</button>
   </div>
 </div>
 

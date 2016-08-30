@@ -12,6 +12,8 @@ export class BudgetFormComponent implements OnChanges{
   @Input() itemId: number;
   @Output() notify = new EventEmitter<MsBudget>();
   
+  public static _DEF_BUDGET: number = 500;
+
   ngOnChanges(changes: SimpleChanges) {
     console.log('form>itemId: ', changes['itemId'].currentValue);
     //this.setModel(changes['itemId'].currentValue);
@@ -28,7 +30,7 @@ export class BudgetFormComponent implements OnChanges{
 
   ngOnInit(){
     console.log('form>itemId:', this.itemId);
-    this.model = new MsBudget(0);
+    this.model = new MsBudget(BudgetFormComponent._DEF_BUDGET);
   }
 
   currencies = ["EUR", "USD"];
@@ -50,7 +52,7 @@ export class BudgetFormComponent implements OnChanges{
   active = true;
 
   newBudget() {
-    this.model = new MsBudget(0);
+    this.model = new MsBudget(BudgetFormComponent._DEF_BUDGET);
     this.active = false;
     setTimeout(() => this.active = true, 0);
   }
@@ -59,9 +61,8 @@ export class BudgetFormComponent implements OnChanges{
   //   Name via form.controls = {{showFormControls(heroForm)}}
   showFormControls(form: NgForm) {
 
-    //return form && form.controls['name'] &&
-    //form.controls['name'].value; 
-    return "todo";
+    return form && form.controls['budget'] &&
+    form.controls['budget'].value; 
   }
 
 }

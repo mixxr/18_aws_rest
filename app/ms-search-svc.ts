@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import { Observable }     from 'rxjs/Observable';
 // Operators
 import 'rxjs/add/operator/catch';
@@ -17,13 +17,16 @@ export class MsSearchSvc{
     private svcUrl = 'http://localhost:3000/cart-items'; 
 
     getList (aBudget: MsBudget): Observable<MsCartItem[]> {
+        console.log('getList: ',aBudget, JSON.stringify(aBudget));
         var headers = new Headers();
+        let search: URLSearchParams = new URLSearchParams();
+        search.set('budget', JSON.stringify(aBudget));
         //headers.append('x-api-key', 'ezjIkkJORt1W3kkfxbGd14hLaUdkSpmY8L3LQIvp');
         //let headers = new Headers({ 'Content-Type': 'application/json' });
         //let options = new RequestOptions({ headers: headers });
         
         // TODO: usare aBudget
-        return this.http.get(this.svcUrl, { headers})
+        return this.http.get(this.svcUrl, { headers, search})
                     .map(this.extractData)
                     .catch(this.handleError);
     }

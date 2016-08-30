@@ -17,7 +17,7 @@ import {MsSearchSvc} from "./ms-search-svc";
                 <th>Qty</th>
                 <th>Description</th>
             </tr>
-            <tr *ngFor="let myItem of cartSvc.list" (click)="select(myItem.id)">   
+            <tr *ngFor="let myItem of list" (click)="select(myItem.id)">   
                 <td>{{myItem.id}}</td>             
                 <td>{{myItem.name}}</td>
                 <td>{{myItem.price}}</td>
