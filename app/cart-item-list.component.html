@@ -12,8 +12,6 @@
  
        <button type="submit" class="btn btn-success" [disabled]="!budgetForm.form.valid">Submit</button>
        <button type="button" class="btn btn-default" (click)="onReset()">Reset</button>
-       <br>
-       Budget = {{diagnostic}}
     </form>
 
 <!--
@@ -37,6 +35,9 @@
     <button class="btn btn-default" (click)="onEdit()">&lt; Change Budget</button>
   </div>
 
+<br>
+       Budget = {{diagnostic}}
+
   <hr/>
   <div>{{message}}:<br/>
         <br/>
@@ -47,13 +48,23 @@
                 <th>Price</th>
                 <th>Qty</th>
                 <th>Description</th>
+                <th>Actions</th>
             </tr>
-            <tr *ngFor="let myItem of list" (click)="select(myItem.id)">   
+            <tr *ngFor="let myItem of list" (click)="onSelect(myItem.id)">   
                 <td>{{myItem.id}}</td>             
                 <td>{{myItem.name}}</td>
                 <td>{{myItem.price}} {{myItem.currency}}</td>
                 <td>{{myItem.qty}}</td>
                 <td>{{myItem.description}}</td>
+                <td>
+                     <div class="btn-group-vertical btn-group-xs">
+                      <button type="button" class="btn btn-primary" (click)="onSimilar(myItem.id,'A')">avoid</button>
+                      <button type="button" class="btn btn-primary" (click)="onSimilar(myItem.id,'F')">agree</button>
+                      <button type="button" class="btn btn-primary" (click)="onConsider(myItem.id,'S')">save</button>
+                      <button type="button" class="btn btn-primary" (click)="onConsider(myItem.id,'R')">remove</button>
+                    </div>
+
+                </td>
             </tr>
         </table>
     </div>
