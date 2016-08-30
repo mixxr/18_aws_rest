@@ -3,6 +3,7 @@ export class MsCartItem {
     public id: number,
     public name: string,
     public price: number,
+    public currency: string = "EUR",
     public qty: number = 1,
     public outOfStock: boolean = false,
     public description?: string,

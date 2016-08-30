@@ -25,13 +25,13 @@ export class BudgetFormComponent implements OnChanges{
 
   model:MsBudget;
 
-/*
+
   ngOnInit(){
     console.log('form>itemId:', this.itemId);
-    this.model = this.svc.getById(this.itemId) || new Hero(0,'','');
+    this.model = new MsBudget(0);
   }
-*/
-  currencies = ['EUR', 'USD'];
+
+  currencies = ["EUR", "USD"];
 
   submitted = false;
 
@@ -59,8 +59,9 @@ export class BudgetFormComponent implements OnChanges{
   //   Name via form.controls = {{showFormControls(heroForm)}}
   showFormControls(form: NgForm) {
 
-    return form && form.controls['name'] &&
-    form.controls['name'].value; 
+    //return form && form.controls['name'] &&
+    //form.controls['name'].value; 
+    return "todo";
   }
 
 }

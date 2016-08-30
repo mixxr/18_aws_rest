@@ -8,9 +8,9 @@ import { CartItemList } from './cart-item-list.component';
     selector: 'my-app',
     //providers: [HTTP_PROVIDERS], // alternative to the bootstrap config
     template: `
-        <budget-form [itemId]="itemId" (notify)="changeBudget($event)"></hero-form>
+        <budget-form [itemId]="itemId" (notify)="changeBudget($event)"></budget-form>
         <hr/>
-        <cart-item-list (onSelect)="changeItem($event)" [budget]="budget"></hero-list>
+        <cart-item-list (onSelect)="changeItem($event)" [budget]="budget"></cart-item-list>
     `,
     directives: [BudgetFormComponent, CartItemList]
 })
