@@ -1,4 +1,5 @@
 import {Component} from "@angular/core";
+import {NgClass} from '@angular/common';
 
 import {MsCartItem} from "./ms-cart-item";
 import {MsBudget} from "./ms-budget";
@@ -7,7 +8,8 @@ import {MsSearchSvc} from "./ms-search-svc";
 
 @Component({
     selector: 'cart-item-list',
-    templateUrl: 'app/cart-item-list.component.html'
+    templateUrl: 'app/cart-item-list.component.html',
+    directives: [NgClass]
 })
 
 export class CartItemList {
@@ -20,6 +22,7 @@ export class CartItemList {
 
     currencies = ["EUR", "USD"];
     submitted = false;
+    listView = false;
 
     constructor(public searchSvc:MsSearchSvc){
         console.log('constructor>list:',this.list);
@@ -92,6 +95,12 @@ export class CartItemList {
     onDelete(itemId:number){
         this.getItem(itemId).qty = 0;
         this.onQtyChange(itemId,"0");
+    }
+
+    onQtyBtn(itemId:number, increment:number){
+        console.log('id,qty:',itemId,increment);
+        this.getItem(itemId).qty += increment;
+        this.onQtyChange(itemId,""+this.getItem(itemId).qty);
     }
 
     onQtyChange(itemId:number, newQty:string){
