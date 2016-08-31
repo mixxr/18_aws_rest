@@ -39,7 +39,7 @@
        Budget = {{diagnostic}}
 
   <hr/>
-  <div>{{message}}:<br/>
+  <div>{{message}}:<br/>{{getValue()|currency:'EUR':true:'1.2-2'}}
         <br/>
         <table class="table table-striped table-hover">
             <tr>
@@ -50,18 +50,17 @@
                 <th>Description</th>
                 <th>Actions</th>
             </tr>
-            <tr *ngFor="let myItem of list" (click)="onSelect(myItem.id)">   
+            <tr *ngFor="let myItem of list">   
                 <td>{{myItem.id}}</td>             
                 <td>{{myItem.name}}</td>
                 <td>{{myItem.price}} {{myItem.currency}}</td>
-                <td>{{myItem.qty}}</td>
+                <td><input [(ngModel)]="myItem.qty" (ngModelChange)="onQtyChange(myItem.id,$event)" name="qty" id="qty" required></td>
                 <td>{{myItem.description}}</td>
-                <td>
+                <td>{{getDiagnostic(myItem)}}
                      <div class="btn-group-vertical btn-group-xs">
                       <button type="button" class="btn btn-primary" (click)="onSimilar(myItem.id,'A')">avoid</button>
                       <button type="button" class="btn btn-primary" (click)="onSimilar(myItem.id,'F')">agree</button>
-                      <button type="button" class="btn btn-primary" (click)="onConsider(myItem.id,'S')">save</button>
-                      <button type="button" class="btn btn-primary" (click)="onConsider(myItem.id,'R')">remove</button>
+                      <button type="button" class="btn btn-primary" (click)="onDelete(myItem.id)">remove</button>
                     </div>
 
                 </td>

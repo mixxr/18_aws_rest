@@ -11,7 +11,7 @@ import {MsSearchSvc} from "./ms-search-svc";
 })
 
 export class CartItemList {
-    
+
     public static _DEF_BUDGET: number = 500;
 
     model:MsBudget;
@@ -27,7 +27,37 @@ export class CartItemList {
 
     ngOnInit() {
         this.model = new MsBudget(CartItemList._DEF_BUDGET);
+        this.list = [];
+        this.model.cart = {};
     }
+
+    initList(list:MsCartItem[]){
+        this.list = list;
+        this.list.map((item)=>this.model.cart[item.id]=item.qty);
+    }
+
+    getRows(): number{
+        return this.list.length | 0;
+    }
+
+    getValue(): number{
+        var prices = this.list.map(function(a:MsCartItem) {return (a.price*a.qty);});
+        return prices.reduce((acc, value) => acc + value, 0);
+    }
+
+    getItem(itemId: number): MsCartItem{
+        return this.list.find((item)=>(item.id == itemId));
+    }
+
+    removeItem(itemId: number){
+        var item = this.getItem(itemId);
+        if (item){
+            const i = this.list.indexOf(item);
+            this.list = [...this.list.slice(0,i),
+            ...this.list.slice(i+1)];
+        }
+    }
+    
 
     // TODO: Workaround until NgForm has a reset method (#6822)
     active = true;
@@ -37,7 +67,7 @@ export class CartItemList {
         console.log('onSubmit:',this.submitted);
         this.searchSvc.getList(this.model)
                 .subscribe(
-                    list => this.list = list,
+                    list => this.initList(list),
                     error => this.message = <any>error);
         this.submitted = true; 
     }
@@ -50,21 +80,26 @@ export class CartItemList {
 
     get diagnostic() { return JSON.stringify(this.model); }
 
+    getDiagnostic(item: MsCartItem):string{
+        return JSON.stringify(item);
+    }
+
     // list event handler
     onSelect(itemId:number){
         console.log('select:', itemId);
     }
  
-    // save(S)|remove(R)
-    onConsider(itemId:number,action:string){
-        console.log('consider:', itemId,' ',action);
-        if (this.model.consider === undefined || this.model.consider.length === 0)
-            this.model.consider = ';';
-        if (this.model.consider.indexOf(';'+itemId+':') >= 0)
-            this.model.consider = this.model.consider.replace(';'+itemId+':'+(action==='S'?'R':'S')+';',';'+itemId+':'+action+';');
-        else
-            this.model.consider += itemId+':'+action+';';
-        
+    onDelete(itemId:number){
+        this.getItem(itemId).qty = 0;
+        this.onQtyChange(itemId,"0");
+    }
+
+    onQtyChange(itemId:number, newQty:string){
+        console.log('id,qty:',itemId,newQty);
+        var q = parseInt(newQty);
+        this.model.cart[itemId] = q;
+        if (q <= 0)
+            this.removeItem(itemId);
     }
 
     // avoid(A)|find(F)

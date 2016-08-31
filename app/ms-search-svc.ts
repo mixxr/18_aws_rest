@@ -14,7 +14,7 @@ import {MsCartItem} from "./ms-cart-item";
 @Injectable()
 export class MsSearchSvc{
     constructor (private http: Http) {}
-    private svcUrl = 'http://localhost:3000/cart-items'; 
+    private svcUrl = 'http://localhost:3000/cart-items?_limit=5'; 
 
     getList (aBudget: MsBudget): Observable<MsCartItem[]> {
         console.log('getList: ',aBudget, JSON.stringify(aBudget));
