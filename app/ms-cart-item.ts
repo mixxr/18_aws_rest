@@ -11,7 +11,8 @@ export class MsCartItem {
     public discount?: number,
     public special?: boolean,
     public origin?: string,
-    public link?: string
+    public link?: string,
+    public deleting:boolean = false
     ) {  
     }
 }

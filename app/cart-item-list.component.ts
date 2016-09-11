@@ -19,6 +19,7 @@ export class CartItemList {
     model:MsBudget;
     message = "Your bargain";
     list:MsCartItem[];
+    //deletingLs: { [id: string] : boolean; } = {};
 
     currencies = ["EUR", "USD"];
     submitted = false;
@@ -39,6 +40,7 @@ export class CartItemList {
         this.list.map((item)=>this.model.cart[item.id]=item.qty);
     }
 
+
     getRows(): number{
         return this.list.length | 0;
     }
@@ -53,6 +55,7 @@ export class CartItemList {
     }
 
     removeItem(itemId: number){
+        console.log('removeItem:',itemId);
         var item = this.getItem(itemId);
         if (item){
             const i = this.list.indexOf(item);
@@ -93,33 +96,59 @@ export class CartItemList {
     }
  
     onDelete(itemId:number){
-        this.getItem(itemId).qty = 0;
-        this.onQtyChange(itemId,"0");
+        // this.getItem(itemId).oldQty = this.getItem(itemId).qty;
+        // this.getItem(itemId).qty = 0;
+        // this.onQtyChange(itemId,"0");
+        if (this.model.forceDel)
+            this.onDelConfirmBtn(itemId, true);
+        else
+            this.getItem(itemId).deleting = true;
+    }
+
+    onPin(itemId:number){
+        // this.getItem(itemId).oldQty = this.getItem(itemId).qty;
+        // this.getItem(itemId).qty = 0;
+        // this.onQtyChange(itemId,"0");
+        this.model.pin[itemId] = !this.model.pin[itemId]; 
+    }
+
+    onDelConfirmBtn(itemId:number, confirm:boolean){
+        this.getItem(itemId).deleting = confirm;
+        if (confirm) {
+            this.model.cart[itemId] = 0;
+            this.removeItem(itemId);
+        }else
+            this.getItem(itemId).qty = this.model.cart[itemId];
     }
 
     onQtyBtn(itemId:number, increment:number){
-        console.log('id,qty:',itemId,increment);
+        console.log('btn:id,increment:',itemId,increment);
         this.getItem(itemId).qty += increment;
-        this.onQtyChange(itemId,""+this.getItem(itemId).qty);
+        console.log('btn:id,qty:',itemId,this.getItem(itemId).qty);
+        this.onQtyChange(itemId,this.getItem(itemId).qty);
     }
 
-    onQtyChange(itemId:number, newQty:string){
-        console.log('id,qty:',itemId,newQty);
-        var q = parseInt(newQty);
-        this.model.cart[itemId] = q;
-        if (q <= 0)
-            this.removeItem(itemId);
+    onQtyChange(itemId:number, newQty:number){
+        console.log('chg:id,qty:',itemId,newQty);
+        this.getItem(itemId).qty = newQty;
+        if (newQty <= 0)
+            this.getItem(itemId).deleting = true;
+        else
+            this.model.cart[itemId] = newQty;
     }
+
+
 
     // avoid(A)|find(F)
-    onSimilar(itemId:number,action:string){
-        console.log('similar:', itemId,' ',action);
-        if (this.model.similar === undefined || this.model.similar.length === 0)
-            this.model.similar = ';';
-         if (this.model.similar.indexOf(';'+itemId+':') >= 0)
-            this.model.similar = this.model.similar.replace(';'+itemId+':'+(action==='A'?'F':'A')+';',';'+itemId+':'+action+';');
-        else
-            this.model.similar += itemId+':'+action+';';
+    onSimilar(itemId:number,iloveit:boolean){
+        console.log('similar:', itemId,' ',iloveit);
+        // if (this.model.similar === undefined || this.model.similar.length === 0)
+        //     this.model.similar = ';';
+        //  if (this.model.similar.indexOf(';'+itemId+':') >= 0)
+        //     this.model.similar = this.model.similar.replace(';'+itemId+':'+(action==='A'?'F':'A')+';',';'+itemId+':'+action+';');
+        // else
+        //     this.model.similar += itemId+':'+action+';';
+        this.model.similar[itemId] = iloveit;
     }
 
 
