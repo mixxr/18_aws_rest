@@ -1,6 +1,6 @@
 export class MsCartItem {
     constructor(
-    public id: number,
+    public id: string,
     public name: string,
     public price: number,
     public currency: string = "EUR",

@@ -50,11 +50,11 @@ export class CartItemList {
         return prices.reduce((acc, value) => acc + value, 0);
     }
 
-    getItem(itemId: number): MsCartItem{
+    getItem(itemId: string): MsCartItem{
         return this.list.find((item)=>(item.id == itemId));
     }
 
-    removeItem(itemId: number){
+    removeItem(itemId: string){
         console.log('removeItem:',itemId);
         var item = this.getItem(itemId);
         if (item){
@@ -91,11 +91,11 @@ export class CartItemList {
     }
 
     // list event handler
-    onSelect(itemId:number){
+    onSelect(itemId:string){
         console.log('select:', itemId);
     }
  
-    onDelete(itemId:number){
+    onDelete(itemId:string){
         // this.getItem(itemId).oldQty = this.getItem(itemId).qty;
         // this.getItem(itemId).qty = 0;
         // this.onQtyChange(itemId,"0");
@@ -112,7 +112,7 @@ export class CartItemList {
         this.model.pin[itemId] = !this.model.pin[itemId]; 
     }
 
-    onDelConfirmBtn(itemId:number, confirm:boolean){
+    onDelConfirmBtn(itemId:string, confirm:boolean){
         this.getItem(itemId).deleting = confirm;
         if (confirm) {
             this.model.cart[itemId] = 0;
@@ -121,14 +121,14 @@ export class CartItemList {
             this.getItem(itemId).qty = this.model.cart[itemId];
     }
 
-    onQtyBtn(itemId:number, increment:number){
+    onQtyBtn(itemId:string, increment:number){
         console.log('btn:id,increment:',itemId,increment);
         this.getItem(itemId).qty += increment;
         console.log('btn:id,qty:',itemId,this.getItem(itemId).qty);
         this.onQtyChange(itemId,this.getItem(itemId).qty);
     }
 
-    onQtyChange(itemId:number, newQty:number){
+    onQtyChange(itemId:string, newQty:number){
         console.log('chg:id,qty:',itemId,newQty);
         this.getItem(itemId).qty = newQty;
         if (newQty <= 0)

@@ -1,8 +1,15 @@
-<div class="container">
+<nav class="navbar navbar-default navbar-fixed-top well navbar-col">
+    <div class="container">
+       <a href="#" class="navbar-brand">Budget = {{diagnostic}}</a>
+       <p class="navbar-text navbar-right">{{message}}: {{getValue()|currency:'EUR':true:'1.2-2'}}</p>
+    </div>
+  </nav>
+
+<div class="container top-margin">
   <div  [hidden]="submitted">
     <form class="form-inline" *ngIf="active" (ngSubmit)="onSubmit()" #budgetForm="ngForm">
       <div class="form-group">
-        <label class="sr-only" for="budget">Amount (in USD)</label>
+        <label class="sr-only" for="budget">Amount (in EUR)</label>
         <div class="input-group">
           <div class="input-group-addon">My budget is</div>
           <input type="number" class="form-control" id="budget" placeholder="Amount" required [(ngModel)]="model.value" name="budget"  #budget="ngModel">
@@ -13,20 +20,6 @@
        <button type="submit" class="btn btn-success" [disabled]="!budgetForm.form.valid">Submit</button>
        <button type="button" class="btn btn-default" (click)="onReset()">Reset</button>
     </form>
-
-<!--
-      <div class="form-group">
-        <label for="currency">Currency</label>
-        <select class="form-control" required
-          [(ngModel)]="model.currency"
-            name="currency" #currency="ngModel" >
-          <option *ngFor="let curr of currencies" [value]="curr">{{curr}}</option>
-        </select>
-        <div [hidden]="currency.valid || currency.pristine" class="alert alert-danger">
-          Currency is required
-        </div>
-      </div>
-    -->
   </div>
 
   <div [hidden]="!submitted">
@@ -35,15 +28,9 @@
     <button class="btn btn-default" (click)="onEdit()">&lt; Change Budget</button>
   </div>
 
-<br>
-<div >
-       Budget = {{diagnostic}}
-
-  <hr/>
-  {{message}}: {{getValue()|currency:'EUR':true:'1.2-2'}}
 
 
-  </div>
+
   <div class="well well-sm">
         <div class="btn-group">
             <button id="list" class="btn btn-default btn-sm" (click)="listView = true;"><span class="glyphicon glyphicon-th-list"></span> List</button> 

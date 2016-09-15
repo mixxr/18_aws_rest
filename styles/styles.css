@@ -38,6 +38,10 @@ button:disabled {
   cursor: auto;
 }
 
+/* navbar top */
+.top-margin {
+  padding-top: 160px;
+}
 
 /* everywhere else */
 * { 
