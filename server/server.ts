@@ -16,6 +16,11 @@ app.use(function(req, res, next) {
 const port:number = process.env.PORT || 8080;
 const router = express.Router();
 
+var readJSON = function ():any{
+  var jsonfile = require('jsonfile');
+  return jsonfile.readFileSync("server/normalizers/files/cart-items-all.json");
+}
+
 // test route
 router.get('/', function (req, res) {
   console.log("GET: ",req.query);
@@ -25,13 +30,9 @@ router.get('/', function (req, res) {
   console.log("-- currency: ",budget.currency);
   console.log("-- similar: ",budget.similar);
   
-  var ids:string[] = ["2312WER","445 GH"];
-  var items:MsCartItem[] = [];
+  let items = readJSON();
+  console.log(items);
   
-  console.log(ids);
-  ids.forEach(function (id:string) {
-   items.push(new MsCartItem(id,"Product "+id,100.00,budget.currency,1,false,"Description description description description"));
-  });
     
   res.json(items);
 });

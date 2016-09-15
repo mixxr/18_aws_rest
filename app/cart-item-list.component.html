@@ -43,7 +43,7 @@
      <div id="products" class="row list-group" >
        <div [ngClass]="{'item':true,'list-group-item':listView,'grid-group-item':!listView, 'col-xs-6':true,'col-md-4':true,'col-lg-3':true}" *ngFor="let myItem of list">
             <div class="thumbnail">
-                <img class="group list-group-image" src="public/400x250.png" alt="" />
+                <img class="group list-group-image" src="{{myItem.imgUrl}}" alt="" />
                 <div class="caption" *ngIf="myItem.deleting">
                     <h3 class="group inner list-group-item-heading alert-danger">{{myItem.name}} was removed from your basket!</h3>  
                     <div class="input-group number-spinner lead">
