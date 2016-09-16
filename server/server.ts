@@ -3,6 +3,9 @@ const app = express();
 import * as bodyParser from 'body-parser';
 import {MsBudget} from "../app/ms-budget";
 import {MsCartItem} from "../app/ms-cart-item";
+import {DAL} from "./dal";
+
+var dal:DAL<MsCartItem> = new DAL("mongodb://localhost:27017/mybudget","items");
 
 // configure our app to use bodyParser(it let us get the json data from a POST)
 app.use(bodyParser.urlencoded({extended: true}));
@@ -23,19 +26,14 @@ var readJSON = function ():any{
 
 // test route
 router.get('/', function (req, res) {
-  console.log("GET: ",req.query);
   console.log("GET-budget: ",req.query.budget);
-  console.log("-- currency: ",req.query.budget.currency);
   var budget:MsBudget = JSON.parse(req.query.budget);
-  console.log("-- currency: ",budget.currency);
-  console.log("-- similar: ",budget.similar);
-  
-  let items = readJSON();
-  console.log(items);
-  
-    
-  res.json(items);
+
+  dal.getRecords("{}",function(err:any, items:any[]) {
+                 res.send(items);
+             });
 });
+
 
 // prefixed all routes with /api
 app.use('/cart-items', router);

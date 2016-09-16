@@ -1,6 +1,6 @@
 export class MsCartItem {
     constructor(
-    public id: string,
+    public sku: string, // supplier id
     public name: string,
     public price: number,
     public shipCost:number = 0.00,
@@ -15,7 +15,8 @@ export class MsCartItem {
     public origin?: string,
     public link?: string,
     public category?:string,
-    public deleting:boolean = false
+    public deleting:boolean = false,
+    public refresh:number = (new Date()).getTime()
     ) {  
     }
 }

@@ -37,7 +37,7 @@ export class CartItemList {
 
     initList(list:MsCartItem[]){
         this.list = list;
-        this.list.map((item)=>this.model.cart[item.id]=item.qty);
+        this.list.map((item)=>this.model.cart[item.sku]=item.qty);
     }
 
 
@@ -51,7 +51,7 @@ export class CartItemList {
     }
 
     getItem(itemId: string): MsCartItem{
-        return this.list.find((item)=>(item.id == itemId));
+        return this.list.find((item)=>(item.sku == itemId));
     }
 
     removeItem(itemId: string){
