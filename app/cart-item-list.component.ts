@@ -6,6 +6,7 @@ import {MsBudget} from "./ms-budget";
 import {MsSearchSvc} from "./ms-search-svc";
 
 
+
 @Component({
     selector: 'cart-item-list',
     templateUrl: 'app/cart-item-list.component.html',

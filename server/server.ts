@@ -1,7 +1,7 @@
 import * as express from 'express';
 const app = express();
 import * as bodyParser from 'body-parser';
-import {MsBudget} from "../app/ms-budget";
+import {SingleRequest} from "./model/single-request";
 import {MsCartItem} from "../app/ms-cart-item";
 import {DAL} from "./dal";
 
@@ -26,12 +26,22 @@ var readJSON = function ():any{
 
 // test route
 router.get('/', function (req, res) {
-  console.log("GET-budget: ",req.query.budget);
-  var budget:MsBudget = JSON.parse(req.query.budget);
+  console.log("GET-request-param: ",req.query.budget);
+  var budget:SingleRequest = JSON.parse(req.query.budget);
+  //let similar:string = req.query.budget.indexOf("similar"); 
+  let priceRange: number[] = [(budget.maxItems === 1)?budget.maxValue * 0.85:0, budget.maxValue];      
 
-  dal.getRecords("{}",function(err:any, items:any[]) {
-                 res.send(items);
-             });
+  dal.getRecords(budget.cOK, budget.cKO, budget.pBad, priceRange, budget.maxItems, function(err:any, items:any[]) {
+      let currValue:number = 0;
+      let cartItems:MsCartItem[] = [];
+      for(let i=0;i<items.length;i++)
+        if ((currValue+items[i].price) <= budget.maxValue){
+          cartItems.push(items[i]);
+          currValue += items[i].price;
+        }
+      
+      res.send(cartItems);
+  });
 });
 
 

@@ -54,7 +54,8 @@
 
   var config = {
     map: map,
-    packages: packages
+    packages: packages,
+    defaultJSExtensions: true
   };
 
   System.config(config);

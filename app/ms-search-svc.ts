@@ -1,6 +1,8 @@
 import {Injectable} from "@angular/core";
 import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import { Observable }     from 'rxjs/Observable';
+
+import {SingleRequest} from '../server/model/single-request';
 // Operators
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
@@ -11,24 +13,44 @@ import 'rxjs/add/observable/throw';
 import {MsBudget} from "./ms-budget";
 import {MsCartItem} from "./ms-cart-item";
 
+
+
 @Injectable()
 export class MsSearchSvc{
     constructor (private http: Http) {}
     private svcUrl = 'http://localhost:8080/cart-items'; 
 
+    createSingleRequest(b:MsBudget):SingleRequest{
+        let request:SingleRequest = new SingleRequest();
+        request.maxValue = b.value - b.currentValue;
+        request.maxItems = b.maxItems;
+        Object.keys(b.similar).forEach((c)=>{
+            if (b.similar[c]) request.cOK.push(c);
+            else
+                if (!b.similar[c]) request.cKO.push(c);
+        });
+        request.cOK.concat(b.categories);
+        // add all sku in spite of the qty
+        Object.keys(b.cart).forEach((sku)=>request.pBad.push(sku));
+
+        return request;
+    }
+
     getList (aBudget: MsBudget): Observable<MsCartItem[]> {
         console.log('getList: ',aBudget, JSON.stringify(aBudget));
         let search: URLSearchParams = new URLSearchParams();
-        search.set('budget', JSON.stringify(aBudget));
+        
+        search.set('budget', JSON.stringify(this.createSingleRequest(aBudget)));
         //headers.append('x-api-key', 'ezjIkkJORt1W3kkfxbGd14hLaUdkSpmY8L3LQIvp');
         //let headers = new Headers({ 'Access-Control-Request-Origin:': '*' });
         //let options = new RequestOptions({ headers: headers });
         let headers = new Headers();
-        // TODO: usare aBudget
+
         return this.http.get(this.svcUrl, { headers, search})
                     .map(this.extractData)
                     .catch(this.handleError);
     }
+    
     private extractData(res: Response) {
         let body = res.json();
         console.log("extractData:",body);

@@ -16,8 +16,32 @@ export class DAL<T>{
         });
     }
 
-    getRecords(filter:string,callback:any){
-        this._collection.find().toArray( callback );
+    getRecords(categoriesOK:string[], categoriesBad:string[], skuToEsclude:string[], priceRange:number[], limit:number,callback:any){
+
+        //var filter = {"category": {$in : categoriesOK, $nin : categoriesBad}, "sku" : {$nin : skuToEsclude}, "price" : {$gt : priceRange[0], $lt:priceRange[1]}};
+        categoriesBad = categoriesBad || [];
+        categoriesOK = categoriesOK || [];
+        skuToEsclude = skuToEsclude || [];
+        priceRange = priceRange || [];
+        var filter = {};
+        if (categoriesOK.length > 0 || categoriesBad.length > 0){
+            filter["category"] = {};
+            if (categoriesOK.length > 0)
+                filter["category"].$in = categoriesOK;
+            if (categoriesBad.length > 0)
+                filter["category"].$nin = categoriesBad; 
+        }
+        if (skuToEsclude.length > 0){
+            filter["sku"] = {};
+            filter["sku"].$nin = skuToEsclude;
+        }
+        if (priceRange.length > 0){
+            filter["price"] = {};
+            filter["price"].$gt = priceRange[0];
+            filter["price"].$lt = priceRange[1];
+        }
+        console.log(filter,JSON.stringify(filter));
+        this._collection.find(filter).limit(limit).toArray( callback );
     }
 }
 
