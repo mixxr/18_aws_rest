@@ -29,7 +29,7 @@ router.get('/', function (req, res) {
   console.log("GET-request-param: ",req.query.budget);
   var budget:SingleRequest = JSON.parse(req.query.budget);
   //let similar:string = req.query.budget.indexOf("similar"); 
-  let priceRange: number[] = [(budget.maxItems === 1)?budget.maxValue * 0.85:0, budget.maxValue];      
+  let priceRange: number[] = [(budget.maxItems === 1)?budget.maxValue * 0.75:0, budget.maxValue];      
 
   dal.getRecords(budget.cOK, budget.cKO, budget.pBad, priceRange, budget.maxItems, function(err:any, items:any[]) {
       let currValue:number = 0;

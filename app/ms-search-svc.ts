@@ -10,7 +10,7 @@ import 'rxjs/add/operator/toPromise';
 // Statics
 import 'rxjs/add/observable/throw';
 
-import {MsBudget} from "./ms-budget";
+import {MsBudget, Similarity} from "./ms-budget";
 import {MsCartItem} from "./ms-cart-item";
 
 
@@ -20,14 +20,14 @@ export class MsSearchSvc{
     constructor (private http: Http) {}
     private svcUrl = 'http://localhost:8080/cart-items'; 
 
-    createSingleRequest(b:MsBudget):SingleRequest{
+    createSingleRequest(b:MsBudget, similarityFunction: (itemId:string)=>string):SingleRequest{
         let request:SingleRequest = new SingleRequest();
         request.maxValue = b.value - b.currentValue;
         request.maxItems = b.maxItems;
         Object.keys(b.similar).forEach((c)=>{
-            if (b.similar[c]) request.cOK.push(c);
+            if (b.similar[c] === Similarity.Love) request.cOK.push(similarityFunction(c));
             else
-                if (!b.similar[c]) request.cKO.push(c);
+                if (b.similar[c] === Similarity.Hate) request.cKO.push(similarityFunction(c));
         });
         request.cOK.concat(b.categories);
         // add all sku in spite of the qty
@@ -36,11 +36,13 @@ export class MsSearchSvc{
         return request;
     }
 
-    getList (aBudget: MsBudget): Observable<MsCartItem[]> {
-        console.log('getList: ',aBudget, JSON.stringify(aBudget));
+    // TODO: usare Observable per evitare il passaggio a ritroso della list corrente: la lista vera la mantiene il servizio
+    getList (aBudget: MsBudget, similarityFunction: (itemId:string)=>string): Observable<MsCartItem[]> {
+        console.log('getList: ',similarityFunction);
+        similarityFunction("wrewerwe");
         let search: URLSearchParams = new URLSearchParams();
         
-        search.set('budget', JSON.stringify(this.createSingleRequest(aBudget)));
+        search.set('budget', JSON.stringify(this.createSingleRequest(aBudget, similarityFunction)));
         //headers.append('x-api-key', 'ezjIkkJORt1W3kkfxbGd14hLaUdkSpmY8L3LQIvp');
         //let headers = new Headers({ 'Access-Control-Request-Origin:': '*' });
         //let options = new RequestOptions({ headers: headers });
@@ -54,7 +56,7 @@ export class MsSearchSvc{
     private extractData(res: Response) {
         let body = res.json();
         console.log("extractData:",body);
-        
+
         return body || [];
     }
     private handleError (error: any) {
@@ -71,5 +73,7 @@ export class MsSearchSvc{
         return cols;
     }
 
+
+    
     
 }

@@ -2,7 +2,7 @@ import {Component} from "@angular/core";
 import {NgClass} from '@angular/common';
 
 import {MsCartItem} from "./ms-cart-item";
-import {MsBudget} from "./ms-budget";
+import {MsBudget, Similarity} from "./ms-budget";
 import {MsSearchSvc} from "./ms-search-svc";
 
 
@@ -16,6 +16,7 @@ import {MsSearchSvc} from "./ms-search-svc";
 export class CartItemList {
 
     public static _DEF_BUDGET: number = 500;
+    public similarity = Similarity;
 
     model:MsBudget;
     message = "Your bargain";
@@ -30,15 +31,27 @@ export class CartItemList {
         console.log('constructor>list:',this.list);
     }
 
+    // getList(){
+    //     return this.searchSvc.list.sort(function (a:MsCartItem, b:MsCartItem) {
+    //         return (a.refresh - b.refresh);
+    //     });
+    // }
+
     ngOnInit() {
         this.model = new MsBudget(CartItemList._DEF_BUDGET);
-        this.list = [];
+        this.resetList();
         this.model.cart = {};
     }
 
-    initList(list:MsCartItem[]){
-        this.list = list;
-        this.list.map((item)=>this.model.cart[item.sku]=item.qty);
+    addList(list:MsCartItem[]){ // only the delta (new items)
+        if (list === undefined || list.length === 0)
+            return;
+        console.log('addList>list-p:',this.list.length,list.length);
+        this.list = [...list, ...this.list];
+        console.log('addList>list-d:',this.list.length);
+        list.map((item)=>this.model.cart[item.sku]=item.qty);
+        if (this.model.value - this.calcCurrentValue() > 1)
+            this.onSubmit(1);
     }
 
 
@@ -46,42 +59,38 @@ export class CartItemList {
         return this.list.length | 0;
     }
 
-    getValue(): number{
-        var prices = this.list.map(function(a:MsCartItem) {return (a.price*a.qty);});
-        return prices.reduce((acc, value) => acc + value, 0);
-    }
-
-    getItem(itemId: string): MsCartItem{
-        return this.list.find((item)=>(item.sku == itemId));
-    }
-
-    removeItem(itemId: string){
-        console.log('removeItem:',itemId);
-        var item = this.getItem(itemId);
-        if (item){
-            const i = this.list.indexOf(item);
-            this.list = [...this.list.slice(0,i),
-            ...this.list.slice(i+1)];
-        }
-    }
+    
     
 
     // TODO: Workaround until NgForm has a reset method (#6822)
     active = true;
 
+    getCategory(itemId:string):string {
+        try{
+            console.log("similarityFunction:",itemId,this.getItem(itemId).category);
+            
+            return this.getItem(itemId).category;
+        }catch(e){
+            return "";
+        }
+    }
+
     // search bar event handler
-    onSubmit() { 
-        console.log('onSubmit:',this.submitted);
-        this.searchSvc.getList(this.model)
+    onSubmit(maxItems:number) { 
+        this.model.maxItems = maxItems || this.model.maxItems;
+        this.model.currentValue = this.calcCurrentValue(); // update cart value
+        this.searchSvc.getList(this.model, this.getCategory)
                 .subscribe(
-                    list => this.initList(list),
+                    list => this.addList(list),
                     error => this.message = <any>error);
         this.submitted = true; 
     }
     onEdit() { this.submitted = false; }
+    
     onReset() {
         this.model = new MsBudget(CartItemList._DEF_BUDGET);
         this.active = false;
+        this.resetList();
         setTimeout(() => this.active = true, 0);
     }
 
@@ -140,6 +149,7 @@ export class CartItemList {
 
 
 
+
     // avoid(A)|find(F)
     onSimilar(itemId:number,iloveit:boolean){
         console.log('similar:', itemId,' ',iloveit);
@@ -149,8 +159,32 @@ export class CartItemList {
         //     this.model.similar = this.model.similar.replace(';'+itemId+':'+(action==='A'?'F':'A')+';',';'+itemId+':'+action+';');
         // else
         //     this.model.similar += itemId+':'+action+';';
-        this.model.similar[itemId] = iloveit;
+        this.model.similar[itemId] = (iloveit)?(this.model.similar[itemId]===Similarity.Love)?Similarity.None:Similarity.Love:(this.model.similar[itemId]===Similarity.Hate)?Similarity.None:Similarity.Hate;
     }
 
+    calcCurrentValue(): number{
+        console.log('calcCurrentValue>list:',this.list.length);
+        var prices = this.list.map(function(a:MsCartItem) {return (a.price*a.qty);});
+        return prices.reduce((acc, value) => acc + value, 0);
+    }
+
+    getItem(itemId: string): MsCartItem{
+        return this.list.find((item)=>(item.sku == itemId));
+    }
+
+    removeItem(itemId: string) {
+        console.log('removeItem:',itemId);
+        var item = this.getItem(itemId);
+        if (item){
+            const i = this.list.indexOf(item);
+            this.list = [...this.list.slice(0,i),
+            ...this.list.slice(i+1)];
+             this.onSubmit(1);
+        }
+    }
+
+    resetList() {
+        this.list = [];
+    }
 
 }

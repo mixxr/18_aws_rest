@@ -38,7 +38,7 @@ MongoClient.connect(url, function (err:any, db:any) {
 var refresher:Refresher = new Refresher((new Date()).getTime(),[],"Euronics");
 
 var getStream = function () {
-    var jsonData = 'server/normalizers/files/euronics-camera-source.json',
+    var jsonData = 'server/normalizers/files/euronics-tv-source.json',
         stream = fs.createReadStream(jsonData, {flags: 'r', encoding: 'utf8'}),
         parser = JSONStream.parse('*.*.*.*.group');
 
@@ -67,7 +67,7 @@ var getFloat = function(s:any,sep:string){
   if(sep)
     str = str.split(sep)[0];
   try{
-    return parseFloat(s);
+    return parseFloat(str.replace(".","").replace(",","."));
   }catch(e){}
   return 0.00;
 }
@@ -99,7 +99,7 @@ var saveJSON = function (obj:any){
  getStream()
   .pipe(es.mapSync(function (data: Array<any>) {
     data.forEach((item)=>{
-      let cItem:MsCartItem = new MsCartItem(undefined,item.url[0].text,parseFloat(item.price[0].text));
+      let cItem:MsCartItem = new MsCartItem(undefined,item.url[0].text,getFloat(item.price,undefined));
       cItem.special = (item.specialLink!== undefined);
       cItem.currency = "EUR";
       cItem.sku = getSku(item.buyLink);

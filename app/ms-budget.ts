@@ -1,4 +1,9 @@
 
+export enum Similarity {
+    None = 0,
+    Love = 1,
+    Hate = 2
+}
 
 export class MsBudget {
     constructor(
@@ -6,7 +11,7 @@ export class MsBudget {
     public currency: string = 'EUR',
     public strict: boolean = false,
     public categories: string[] = [],
-    public similar:  { [id: string] : boolean; } = {},
+    public similar:  { [id: string] : Similarity; } = {},
     public aroundMe: boolean = false,
     public maxItems:number = 10,
     public currentValue: number = 0,

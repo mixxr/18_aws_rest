@@ -1,23 +1,23 @@
 <nav class="navbar navbar-default navbar-fixed-top well navbar-col">
     <div class="container">
        <a href="#" class="navbar-brand">Budget = {{diagnostic}}</a>
-       <p class="navbar-text navbar-right">{{message}}: {{getValue()|currency:'EUR':true:'1.2-2'}}</p>
+       <p class="navbar-text navbar-right">{{message}}: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</p>
     </div>
   </nav>
 
 <div class="container top-margin">
   <div  [hidden]="submitted">
-    <form class="form-inline" *ngIf="active" (ngSubmit)="onSubmit()" #budgetForm="ngForm">
+    <form class="form-inline" *ngIf="active" #budgetForm="ngForm">
       <div class="form-group">
         <label class="sr-only" for="budget">Amount (in EUR)</label>
         <div class="input-group">
           <div class="input-group-addon">My budget is</div>
-          <input type="number" class="form-control" id="budget" placeholder="Amount" required [(ngModel)]="model.value" name="budget"  #budget="ngModel">
+          <input autofocus type="number" class="form-control" id="budget" placeholder="Amount" required [(ngModel)]="model.value" name="budget"  #budget="ngModel">
           <div class="input-group-addon">{{model.currency}}</div>
         </div>
       </div>
  
-       <button type="submit" class="btn btn-success" [disabled]="!budgetForm.form.valid">Submit</button>
+       <button type="button" class="btn btn-success" (click)="onSubmit(undefined)" [disabled]="!budgetForm.form.valid">Submit</button>
        <button type="button" class="btn btn-default" (click)="onReset()">Reset</button>
     </form>
   </div>
@@ -77,8 +77,8 @@
                         </div>
                         <div class="col-xs-6">                            
                           <div class="btn-group">
-                            <button id="similar" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':!model.similar[myItem.sku],'btn-success':model.similar[myItem.sku]}" (click)="onSimilar(myItem.sku,true)"><span class="glyphicon glyphicon-heart"></span></button> 
-                            <button id="similar" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':model.similar[myItem.sku],'btn-danger':!model.similar[myItem.sku]}" (click)="onSimilar(myItem.sku,false)"><span class="glyphicon glyphicon-ban-circle"></span></button>
+                            <button id="similar" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':model.similar[myItem.sku]!==similarity.Love,'btn-success':model.similar[myItem.sku]===similarity.Love}" (click)="onSimilar(myItem.sku,true)"><span class="glyphicon glyphicon-heart"></span></button> 
+                            <button id="similar" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':model.similar[myItem.sku]!==similarity.Hate,'btn-danger':model.similar[myItem.sku]===similarity.Hate}" (click)="onSimilar(myItem.sku,false)"><span class="glyphicon glyphicon-ban-circle"></span></button>
                           </div>
                         </div>
                         <div class="col-xs-3">                            
