@@ -1,46 +1,52 @@
-<nav class="navbar navbar-default navbar-fixed-top well navbar-col">
+<nav [hidden]="!submitted" class="navbar  navbar-fixed-top navbar-custom">
     <div class="container">
-       <a href="#" class="navbar-brand">Budget = {{diagnostic}}</a>
-       <p class="navbar-text navbar-right">{{message}}: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</p>
+      <div class="navbar-header">
+        <span class="navbar-brand">
+          myBudget
+        </span>
+      </div>
+       <span class="navbar-text navbar-right current-value">{{message}}: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</span>
+       <button type="button" class="btn btn-default navbar-btn navbar-right" (click)="onEdit()">&lt; Cambio Budget</button>
     </div>
   </nav>
 
-<div class="container top-margin">
-  <div  [hidden]="submitted">
-    <form class="form-inline" *ngIf="active" #budgetForm="ngForm">
-      <div class="form-group">
-        <label class="sr-only" for="budget">Amount (in EUR)</label>
-        <div class="input-group">
-          <div class="input-group-addon">My budget is</div>
-          <input autofocus type="number" class="form-control" id="budget" placeholder="Amount" required [(ngModel)]="model.value" name="budget"  #budget="ngModel">
-          <div class="input-group-addon">{{model.currency}}</div>
+
+<div class="container top-margin ">
+  <div  [hidden]="submitted" class="row">
+    <div class="col-md-2 col-xs-1"><!--Column left--></div>
+    <div class="col-md-8 col-xs-10">
+      <div class="hidden-sm hidden-lg hidden-md">Oggi voglio spendere</div>
+      <form class="form-inline" *ngIf="active" #budgetForm="ngForm">
+        <div class="form-group">
+          <label class="sr-only" for="budget">Budget (in EUR)</label>
+          <div class="input-group">
+            <div class="input-group-addon"><span class="hidden-xs">Voglio spendere</span></div>
+            <input autofocus type="number" class="form-control" id="budget" placeholder="Budget" required [(ngModel)]="model.value" name="budget"  #budget="ngModel">
+            <div class="input-group-addon">{{model.currency}}</div>
+          </div>
         </div>
-      </div>
- 
-       <button type="button" class="btn btn-success" (click)="onSubmit(undefined)" [disabled]="!budgetForm.form.valid">Submit</button>
-       <button type="button" class="btn btn-default" (click)="onReset()">Reset</button>
-    </form>
-  </div>
+  
 
-  <div [hidden]="!submitted">
-    <h2>searching to best fit your budget...{{ model.value }} {{model.currency}}</h2>
-    <br>
-    <button class="btn btn-default" (click)="onEdit()">&lt; Change Budget</button>
-  </div>
+          <button type="button" class="btn btn-success" (click)="onSubmit(undefined)" [disabled]="!budgetForm.form.valid"><span class="glyphicon glyphicon-search"></span> Mi sento fortunato</button>
+          <button type="button" class="btn btn-success" (click)="onSubmit(undefined)" [disabled]="!budgetForm.form.valid"><span class="glyphicon glyphicon-star-empty"></span> Solo Offerte</button>
+          <!--button type="button" class="btn btn-default" (click)="onReset()">Reset</button-->
+
+      </form>
+    </div>
+    <div class="col-md-2 col-xs-1"><!--Column right--></div>
+  </div> <!-- main form -->
 
 
-
-
-  <div class="well well-sm">
+  <div [hidden]="!submitted" class="well well-sm">
         <div class="btn-group">
             <button id="list" class="btn btn-default btn-sm" (click)="listView = true;"><span class="glyphicon glyphicon-th-list"></span> List</button> 
             <button id="grid" class="btn btn-default btn-sm" (click)="listView = false;"><span class="glyphicon glyphicon-th"></span> Grid</button>
         </div>
         <label class="pull-right">
-            <input type="checkbox" name="forceDel"  [(ngModel)]="model.forceDel"> Immediate delete
+            <input type="checkbox" name="forceDel"  [(ngModel)]="model.forceDel"> elimina senza conferma
         </label>
-    </div>
-     <div id="products" class="row list-group" >
+    </div> <!-- toolbar -->
+     <div [hidden]="!submitted" id="products" class="row list-group" >
        <div [ngClass]="{'item':true,'list-group-item':listView,'grid-group-item':!listView, 'col-xs-6':true,'col-md-4':true,'col-lg-3':true}" *ngFor="let myItem of list">
             <div class="thumbnail">
                 <img class="group list-group-image" src="{{myItem.imgUrl}}" alt="" />

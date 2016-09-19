@@ -20,16 +20,17 @@ export class MsSearchSvc{
     constructor (private http: Http) {}
     private svcUrl = 'http://localhost:8080/cart-items'; 
 
-    createSingleRequest(b:MsBudget, similarityFunction: (itemId:string)=>string):SingleRequest{
+    createSingleRequest(b:MsBudget):SingleRequest{
         let request:SingleRequest = new SingleRequest();
+
         request.maxValue = b.value - b.currentValue;
         request.maxItems = b.maxItems;
         Object.keys(b.similar).forEach((c)=>{
-            if (b.similar[c] === Similarity.Love) request.cOK.push(similarityFunction(c));
+            if (b.similar[c] === Similarity.Love) request.sOK.push(c);
             else
-                if (b.similar[c] === Similarity.Hate) request.cKO.push(similarityFunction(c));
+                if (b.similar[c] === Similarity.Hate) request.sKO.push(c);
         });
-        request.cOK.concat(b.categories);
+        request.cOK = b.categories;
         // add all sku in spite of the qty
         Object.keys(b.cart).forEach((sku)=>request.pBad.push(sku));
 
@@ -37,12 +38,11 @@ export class MsSearchSvc{
     }
 
     // TODO: usare Observable per evitare il passaggio a ritroso della list corrente: la lista vera la mantiene il servizio
-    getList (aBudget: MsBudget, similarityFunction: (itemId:string)=>string): Observable<MsCartItem[]> {
-        console.log('getList: ',similarityFunction);
-        similarityFunction("wrewerwe");
+    getList (aBudget: MsBudget): Observable<MsCartItem[]> {
+        console.log('getList: ',aBudget);
         let search: URLSearchParams = new URLSearchParams();
         
-        search.set('budget', JSON.stringify(this.createSingleRequest(aBudget, similarityFunction)));
+        search.set('budget', JSON.stringify(this.createSingleRequest(aBudget)));
         //headers.append('x-api-key', 'ezjIkkJORt1W3kkfxbGd14hLaUdkSpmY8L3LQIvp');
         //let headers = new Headers({ 'Access-Control-Request-Origin:': '*' });
         //let options = new RequestOptions({ headers: headers });

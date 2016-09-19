@@ -16,12 +16,20 @@ class Refresher {
     public inserts:number = 0,
     public updates:number = 0,
     public deletes:number = 0,
-    public errors:number = 0
+    public errors:number = 0,
+    public incomplete:number = 0,
+    public total:number = 0
   ){}
 };
 
 var JSONStream = require('JSONStream'),
   es = require('event-stream');
+
+if (process.argv.length !== 4){
+  console.log("please use 'node <jsfile> <jsonfile> <Source>");
+  
+  process.exit(1);
+}
 
 var MongoClient = require('mongodb').MongoClient;  
 var collection:any = undefined;
@@ -35,10 +43,10 @@ MongoClient.connect(url, function (err:any, db:any) {
 
 //var counter = 0, n=0;
 //var cart:MsCartItem[] = [];
-var refresher:Refresher = new Refresher((new Date()).getTime(),[],"Euronics");
+var refresher:Refresher = new Refresher((new Date()).getTime(),[],process.argv[3]);
 
 var getStream = function () {
-    var jsonData = 'server/normalizers/files/euronics-tv-source.json',
+    var jsonData = 'server/normalizers/files/'+process.argv[2], //'euronics-blueray-original.json',
         stream = fs.createReadStream(jsonData, {flags: 'r', encoding: 'utf8'}),
         parser = JSONStream.parse('*.*.*.*.group');
 
@@ -67,7 +75,7 @@ var getFloat = function(s:any,sep:string){
   if(sep)
     str = str.split(sep)[0];
   try{
-    return parseFloat(str.replace(".","").replace(",","."));
+    return parseFloat(str.replace(/[€$A-Z ]+/,"").replace(".","").replace(",","."));
   }catch(e){}
   return 0.00;
 }
@@ -75,20 +83,30 @@ var getFloat = function(s:any,sep:string){
 var getText = function(s:any){
   if (s && s[0])
   {
-    return s[0].text;
+    if(s[0].text)
+      return s[0].text;
+    if(s[0].src)
+        return s[0].src;
+    if(s[0].href)
+        return s[0].href;
   }
-  return "";
+  return undefined;
 }
 
 var getSku = function(s:any){
-  var ret:string;
-  if (s && s[0])
-  {
+  var ret:string = undefined;
+  try{
     let params:string[] = s[0].href.split('?')[1].split('&');
     let el = params.find((e)=>(e.startsWith('sku') || e.startsWith('pro') || e.startsWith('pid')));
     ret = el.substring(el.indexOf('=')+1);
-  }
+  }catch(e){}
+
   return ret;
+}
+
+var extractFileName = function(s:any){
+  s = getText(s) || "";
+  return s.substring(s.lastIndexOf("/")+1);
 }
 
 var saveJSON = function (obj:any){
@@ -98,31 +116,38 @@ var saveJSON = function (obj:any){
 
  getStream()
   .pipe(es.mapSync(function (data: Array<any>) {
+    
     data.forEach((item)=>{
-      let cItem:MsCartItem = new MsCartItem(undefined,item.url[0].text,getFloat(item.price,undefined));
-      cItem.special = (item.specialLink!== undefined);
-      cItem.currency = "EUR";
-      cItem.sku = getSku(item.buyLink);
-      cItem.description = getText(item.desc).replace(/\r?\n|\r/g,"");
-      cItem.origin = "Euronics";
-      cItem.imgUrl = item.Image[0].src;
-      cItem.link = item.url[0].href;
-      let p:number = getFloat(item.shippedPrice,' ');
-      cItem.shipCost = (p>0)?p-cItem.price:0;
-      cItem.BOPIS = (item.BOPISLink !== undefined);
-      cItem.discount = getFloat(item.discount,'%');
-      cItem.category = getText(item.type);
-      if (cItem.category && refresher.categories.indexOf(cItem.category) === -1) refresher.categories.push(cItem.category);
-      cItem.refresh = refresher.mills;
+      refresher.total++;
+      if (item.Image !== undefined){
+        let cItem:MsCartItem = new MsCartItem(undefined,item.name[0].text,getFloat(item.price,undefined));
+        cItem.discount = getText(item.discount);
+        cItem.special = (item.specialLink!== undefined || cItem.discount !== undefined);
+        cItem.currency = "EUR";
+        cItem.imgUrl = getText(item.Image);
+        cItem.sku = getSku(item.buyLink) || extractFileName(item.Image);   
+        console.log("sku:", cItem.sku);
+         
+        cItem.description = (getText(item.desc)||"").replace(/\r?\n|\r/g,"");
+        cItem.origin = process.argv[3];
+        cItem.link = getText(item.url) || getText(item.buyLink);
+        let p:number = getFloat(item.shippedPrice,' ');
+        cItem.shipCost = (p>0)?p-cItem.price:0;
+        cItem.BOPIS = (item.BOPISLink !== undefined);
+        cItem.discount = getFloat(item.discount,'%');
+        cItem.category = getText(item.type);
+        if (cItem.category && refresher.categories.indexOf(cItem.category) === -1) refresher.categories.push(cItem.category);
+        cItem.refresh = refresher.mills;
 
-      collection.findOneAndReplace({"sku":cItem.sku,"origin":cItem.origin},cItem, { upsert : true }, function(err:any,result:any){
-        if (!err){
-          refresher.updates += (result.lastErrorObject.updatedExisting)?1:0;
-          refresher.inserts += (result.lastErrorObject.updatedExisting)?0:1;
-        }else
-          refresher.errors++;        
-      });
-
+        collection.findOneAndReplace({"sku":cItem.sku,"origin":cItem.origin},cItem, { upsert : true }, function(err:any,result:any){
+          if (!err){
+            refresher.updates += (result.lastErrorObject.updatedExisting)?1:0;
+            refresher.inserts += (result.lastErrorObject.updatedExisting)?0:1;
+          }else
+            refresher.errors++;        
+        });
+      }else
+        refresher.incomplete++;
     }); // forEach
   }));
 

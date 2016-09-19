@@ -6,13 +6,17 @@ export class DAL<T>{
     _db:mongodb.Db;
     _collection:mongodb.Collection;
 
-    constructor(url:string, coll:string){
+    constructor(url:string, coll:string, activeServer:any){
         this._url = url;
         var obj = this;
         this.mongoClient.connect(url, function (err:any, db:any) {
                 console.log("Connecting to server...",err);
+                if (err) throw 'Error connecting to database - ' + err;
+
                 obj._db = db;
                 obj._collection = db.collection(coll);  
+
+                activeServer();
         });
     }
 
@@ -42,6 +46,24 @@ export class DAL<T>{
         }
         console.log(filter,JSON.stringify(filter));
         this._collection.find(filter).limit(limit).toArray( callback );
+    }
+
+
+    getHeads(skuToInclude:string[], cols:string[], noID: boolean, limit:number,callback:any){
+
+        skuToInclude = skuToInclude || [];
+        cols = cols || [];
+        var filter = {}, 
+            prj = {};
+
+        if (skuToInclude.length > 0){
+            filter["sku"] = {};
+            filter["sku"].$in = skuToInclude;
+        }
+        if (noID) prj["_id"] = 0;
+        cols.forEach((c)=>prj[c] = 1);
+
+        this._collection.find(filter, prj).limit(limit).toArray( callback );
     }
 }
 

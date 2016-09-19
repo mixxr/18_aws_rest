@@ -1,5 +1,7 @@
 import {Component} from "@angular/core";
 import {NgClass} from '@angular/common';
+import {DomSanitizationService} from '@angular/platform-browser';
+
 
 import {MsCartItem} from "./ms-cart-item";
 import {MsBudget, Similarity} from "./ms-budget";
@@ -17,9 +19,10 @@ export class CartItemList {
 
     public static _DEF_BUDGET: number = 500;
     public similarity = Similarity;
+    public pbarColor:string = "";
 
     model:MsBudget;
-    message = "Your bargain";
+    message = "Stai spendendo";
     list:MsCartItem[];
     //deletingLs: { [id: string] : boolean; } = {};
 
@@ -27,7 +30,7 @@ export class CartItemList {
     submitted = false;
     listView = false;
 
-    constructor(public searchSvc:MsSearchSvc){
+    constructor(public searchSvc:MsSearchSvc, public sanitzer: DomSanitizationService){
         console.log('constructor>list:',this.list);
     }
 
@@ -65,21 +68,13 @@ export class CartItemList {
     // TODO: Workaround until NgForm has a reset method (#6822)
     active = true;
 
-    getCategory(itemId:string):string {
-        try{
-            console.log("similarityFunction:",itemId,this.getItem(itemId).category);
-            
-            return this.getItem(itemId).category;
-        }catch(e){
-            return "";
-        }
-    }
+
 
     // search bar event handler
     onSubmit(maxItems:number) { 
         this.model.maxItems = maxItems || this.model.maxItems;
         this.model.currentValue = this.calcCurrentValue(); // update cart value
-        this.searchSvc.getList(this.model, this.getCategory)
+        this.searchSvc.getList(this.model)
                 .subscribe(
                     list => this.addList(list),
                     error => this.message = <any>error);

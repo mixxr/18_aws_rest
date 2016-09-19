@@ -40,8 +40,21 @@ button:disabled {
 
 /* navbar top */
 .top-margin {
-  padding-top: 160px;
+  padding-top: 60px;
 }
+.navbar-custom {
+    background-color:silver;
+   color:#ffffff;
+    border-radius:0;
+    border-bottom: 3px solid darkgreen;
+}
+
+/* current value bar */
+
+.current-value {
+  font-weight: bold; 
+}
+
 
 /* everywhere else */
 * { 
