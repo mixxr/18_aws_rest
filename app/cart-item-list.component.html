@@ -10,7 +10,6 @@
     </div>
   </nav>
 
-
 <div class="container top-margin ">
   <div  [hidden]="submitted" class="row">
     <div class="col-md-2 col-xs-1"><!--Column left--></div>
@@ -47,11 +46,13 @@
         </label>
     </div> <!-- toolbar -->
      <div [hidden]="!submitted" id="products" class="row list-group" >
-       <div [ngClass]="{'item':true,'list-group-item':listView,'grid-group-item':!listView, 'col-xs-6':true,'col-md-4':true,'col-lg-3':true}" *ngFor="let myItem of list">
+       <div [ngClass]="{'item':true,'list-group-item':listView,'grid-group-item':!listView}" class="col-xl-2 col-md-3 col-sm-4 col-xs-6 col-xxs-12" *ngFor="let myItem of list">
             <div class="thumbnail">
-                <img class="group list-group-image" src="{{myItem.imgUrl}}" alt="" />
+                <div class="img-container">
+                  <img class="group list-group-image image-responsive" src="{{myItem.imgUrl}}" alt="" />
+                </div>
                 <div class="caption" *ngIf="myItem.deleting">
-                    <h3 class="group inner list-group-item-heading alert-danger">{{myItem.name}} was removed from your basket!</h3>  
+                    <h4 class="group inner list-group-item-heading alert-danger">Do you want to remove it from the basket?</h4>  
                     <div class="input-group number-spinner lead">
                               <span class="input-group-btn">
                                 <button class="btn btn-default btn-danger" (click)="onDelConfirmBtn(myItem.sku,true)">Confirm</button>
@@ -59,7 +60,11 @@
                               <span class="input-group-btn">
                                 <button class="btn btn-default btn-success" (click)="onDelConfirmBtn(myItem.sku,false)">Revert</button>
                               </span>
-                            </div>
+                              <button (click)="onClick(this)">Alert</button>
+                    </div>
+                    <div>
+                        <br/><br/><br/>
+                    </div>
                 </div>
                 <div class="caption" *ngIf="!myItem.deleting">
                     <h4 class="group inner list-group-item-heading">{{myItem.name}}</h4>
@@ -68,8 +73,7 @@
                         <div class="col-xs-12 col-sm-6">
                             <p class="lead">{{myItem.price | currency:'EUR':true:'1.2-2'}}</p>
                         </div>
-                        <div class="col-xs-12 col-sm-6">
-                     
+                        <div class="col-xs-12 col-sm-6">                     
                             <div class="input-group number-spinner lead">
                               <span class="input-group-btn">
                                 <button class="btn btn-default btn-success" (click)="onQtyBtn(myItem.sku,-1)"><b>-</b></button>
@@ -103,7 +107,7 @@
         </div>
      </div>
 
-
+     <div overlayTarget='ciccio'>ccc</div>
 </div>
 
 

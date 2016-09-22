@@ -8,7 +8,7 @@ import {DAL} from "./dal";
 // configure our app to use bodyParser(it let us get the json data from a POST)
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
+app.use(function(req:any, res:any, next:any) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
@@ -23,7 +23,7 @@ var readJSON = function ():any{
 }
 
 // test route
-router.get('/', function (req, res) {
+router.get('/', function (req:any, res:any) {
   console.log("GET-request-param: ",req.query.budget);
 
   if (!req.query.budget === undefined) res.status(400).send("budget is needed");

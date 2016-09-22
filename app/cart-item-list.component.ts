@@ -1,18 +1,16 @@
-import {Component} from "@angular/core";
-import {NgClass} from '@angular/common';
-import {DomSanitizationService} from '@angular/platform-browser';
-
+import {Component,ViewContainerRef, ViewEncapsulation} from "@angular/core";
 
 import {MsCartItem} from "./ms-cart-item";
 import {MsBudget, Similarity} from "./ms-budget";
 import {MsSearchSvc} from "./ms-search-svc";
 
+import { Overlay } from 'angular2-modal';
+import { Modal } from 'angular2-modal/plugins/bootstrap';
 
 
 @Component({
     selector: 'cart-item-list',
-    templateUrl: 'app/cart-item-list.component.html',
-    directives: [NgClass]
+    templateUrl: 'app/cart-item-list.component.html'
 })
 
 export class CartItemList {
@@ -30,9 +28,12 @@ export class CartItemList {
     submitted = false;
     listView = false;
 
-    constructor(public searchSvc:MsSearchSvc, public sanitzer: DomSanitizationService){
+   constructor(public searchSvc:MsSearchSvc, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal){
         console.log('constructor>list:',this.list);
+        overlay.defaultViewContainer = vcRef;
     }
+
+       // constructor(public searchSvc:MsSearchSvc){}
 
     // getList(){
     //     return this.searchSvc.list.sort(function (a:MsCartItem, b:MsCartItem) {
@@ -182,4 +183,27 @@ export class CartItemList {
         this.list = [];
     }
 
+
+onClick(el:any) {
+    let confirm = this.modal.confirm()
+    .size('sm')
+    .isBlocking(true)
+    .showClose(true)
+    .keyboard(27)
+    .title('Conferma Cancellazione')
+    .titleHtml('Cancella Prodotto')
+    .inElement(true)
+    .body('Sei sicuro di voler rimuovere i prodotti?')
+    .cancelBtn('Annulla')
+    .open('cicco') .catch(
+                err => alert("ERROR"))
+            .then(
+                dialog => dialog.result)
+            .then(
+                result => {
+                    alert("OK");
+                })
+            .catch(
+                err => alert("CANCELED"));
+  }
 }

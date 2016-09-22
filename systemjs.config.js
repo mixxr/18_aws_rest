@@ -10,7 +10,8 @@
 
     '@angular':                   'node_modules/@angular',
     'express': 'node_modules/express',
-    'rxjs':                       'node_modules/rxjs'
+    'rxjs':                       'node_modules/rxjs',
+    'angular2-modal':             'node_modules/angular2-modal'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
@@ -18,7 +19,13 @@
     'app':                        { main: 'main.js',  defaultExtension: 'js' },
     'rxjs':                       { defaultExtension: 'js' },
     'express': { main: 'index.js', defaultExtension: 'js' },
+    'angular2-modal':              { defaultExtension: 'js', main: 'bundles/angular2-modal.umd' }
   };
+
+  // UMD bundles
+  map['angular2-modal/plugins/bootstrap'] = map['angular2-modal'] + '/bundles';
+  packages['angular2-modal/plugins/bootstrap'] =  { defaultExtension: 'js', main: 'angular2-modal.bootstrap.umd' };
+  
 
   var ngPackageNames = [
     'common',
