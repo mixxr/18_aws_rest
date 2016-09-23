@@ -42,17 +42,61 @@ button:disabled {
 .top-margin {
   padding-top: 60px;
 }
+
+.jumbotron{
+  padding-top: 10%;
+  padding-bottom: 10%;
+  border-bottom: 1px solid #009688;
+  background-color:#dadfe3;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  -webkit-transition: height 2s linear; /* For Safari 3.1 to 6.0 */
+  transition: height 2s linear;
+}
+
+.jumbotron.to-close {
+  height: 20px!important;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.jumbotron h1 {
+  font-family: Futura-light-normal, Helvetica,Arial,san-serif;
+  font-size: 2.3em;
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.jumbotron h2 {
+  font-family: Futura-light-normal, Helvetica,Arial,san-serif;
+  font-size: 1.5em;
+  text-transform: capitalize;
+line-height: 1.2;
+}
+
+.jumbotron hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #009688;
+    margin: 1em 0;
+    padding: 0; 
+}
+
 .navbar-custom {
-    background-color:silver;
+    background-color:#dadfe3;
    color:#ffffff;
     border-radius:0;
-    border-bottom: 3px solid darkgreen;
+    border-bottom: 1px solid #009688;
+    padding-left: 5%;
+    padding-right: 5%;
 }
 
 /* current value bar */
 
 .current-value {
   font-weight: bold; 
+  color: #009688;
 }
 
 

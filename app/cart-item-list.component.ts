@@ -73,6 +73,9 @@ export class CartItemList {
 
     // search bar event handler
     onSubmit(maxItems:number) { 
+        console.log('on submit:',this.model);
+        if (this.model.value <= 1)
+            return;
         this.model.maxItems = maxItems || this.model.maxItems;
         this.model.currentValue = this.calcCurrentValue(); // update cart value
         this.searchSvc.getList(this.model)
