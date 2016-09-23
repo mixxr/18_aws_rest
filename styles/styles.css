@@ -83,20 +83,21 @@ line-height: 1.2;
     padding: 0; 
 }
 
-.navbar-custom {
-    background-color:#dadfe3;
-   color:#ffffff;
-    border-radius:0;
+.navbar-inverse {
+    
     border-bottom: 1px solid #009688;
     padding-left: 5%;
     padding-right: 5%;
+}
+
+.navbar-inverse .navbar-text:hover{
+  color:#009688;
 }
 
 /* current value bar */
 
 .current-value {
   font-weight: bold; 
-  color: #009688;
 }
 
 
@@ -123,7 +124,7 @@ line-height: 1.2;
 
 .item.grid-group-item .thumbnail:hover
 {
-  border-bottom: solid 3px #428bca;
+  border-bottom: solid 3px #009688;
 }
 
 .item.list-group-item

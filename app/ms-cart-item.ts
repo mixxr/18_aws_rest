@@ -15,7 +15,6 @@ export class MsCartItem {
     public origin?: string,
     public link?: string,
     public category?:string,
-    public deleting:boolean = false,
     public refresh:number = (new Date()).getTime()
     ) {  
     }

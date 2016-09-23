@@ -13,7 +13,7 @@ import { Modal } from 'angular2-modal/plugins/bootstrap';
     templateUrl: 'app/cart-item-list.component.html'
 })
 
-export class CartItemList {
+export class CartItemList{
 
     public static _DEF_BUDGET: number = 500;
     public similarity = Similarity;
@@ -73,8 +73,8 @@ export class CartItemList {
 
     // search bar event handler
     onSubmit(maxItems:number) { 
-        console.log('on submit:',this.model);
-        if (this.model.value <= 1)
+        console.log('on submit:',this.model.value);
+        if (this.model.value <= 1 || maxItems === 0)
             return;
         this.model.maxItems = maxItems || this.model.maxItems;
         this.model.currentValue = this.calcCurrentValue(); // update cart value
@@ -84,7 +84,7 @@ export class CartItemList {
                     error => this.message = <any>error);
         this.submitted = true; 
     }
-    onEdit() { this.submitted = false; }
+    onEdit() { this.submitted = false; this.isOpen = false;}
     
     onReset() {
         this.model = new MsBudget(CartItemList._DEF_BUDGET);
@@ -109,9 +109,10 @@ export class CartItemList {
         // this.getItem(itemId).qty = 0;
         // this.onQtyChange(itemId,"0");
         if (this.model.forceDel)
-            this.onDelConfirmBtn(itemId, true);
+            this.confirmDelete(itemId, true);
         else
-            this.getItem(itemId).deleting = true;
+            //this.getItem(itemId).deleting = true;
+            this.onModalClick(itemId);
     }
 
     onPin(itemId:number){
@@ -121,11 +122,18 @@ export class CartItemList {
         this.model.pin[itemId] = !this.model.pin[itemId]; 
     }
 
-    onDelConfirmBtn(itemId:string, confirm:boolean){
-        this.getItem(itemId).deleting = confirm;
+    confirmDelete(itemId:string, confirm:boolean){
+        //this.getItem(itemId).deleting = confirm;
         if (confirm) {
+            // remove other with pin=true
+            Object.keys(this.model.pin).forEach((id)=>{
+                this.model.cart[id] = 0;
+                this.removeItem(id); // 0=no call onSubmit()
+                this.model.pin[id] = false;
+            });
             this.model.cart[itemId] = 0;
             this.removeItem(itemId);
+            this.onSubmit(1);
         }else
             this.getItem(itemId).qty = this.model.cart[itemId];
     }
@@ -141,7 +149,8 @@ export class CartItemList {
         console.log('chg:id,qty:',itemId,newQty);
         this.getItem(itemId).qty = newQty;
         if (newQty <= 0)
-            this.getItem(itemId).deleting = true;
+            //this.getItem(itemId).deleting = true;
+            this.onModalClick(itemId);
         else
             this.model.cart[itemId] = newQty;
     }
@@ -178,7 +187,6 @@ export class CartItemList {
             const i = this.list.indexOf(item);
             this.list = [...this.list.slice(0,i),
             ...this.list.slice(i+1)];
-             this.onSubmit(1);
         }
     }
 
@@ -186,27 +194,28 @@ export class CartItemList {
         this.list = [];
     }
 
+    isOpen:boolean = false;
+    
+    onToggle(){
+        this.isOpen = !this.isOpen;
+    }
 
-onClick(el:any) {
+    
+
+onModalClick(itemId:string) {
+
+    let msg = 'Sei sicuro di voler rimuovere '+ ((Object.values(this.model.pin).toString().indexOf('true')>=0)?'i prodotti?':'il prodotto?');
+
     let confirm = this.modal.confirm()
     .size('sm')
     .isBlocking(true)
-    .showClose(true)
     .keyboard(27)
     .title('Conferma Cancellazione')
-    .titleHtml('Cancella Prodotto')
-    .inElement(true)
-    .body('Sei sicuro di voler rimuovere i prodotti?')
+    .body(msg)
     .cancelBtn('Annulla')
-    .open('cicco') .catch(
-                err => alert("ERROR"))
-            .then(
-                dialog => dialog.result)
-            .then(
-                result => {
-                    alert("OK");
-                })
-            .catch(
-                err => alert("CANCELED"));
+    .open().catch(err => {console.log("MODAL ERROR: Deleted in any case");this.confirmDelete(itemId,true);})
+            .then(dialog => dialog.result)
+            .then(result => this.confirmDelete(itemId,true))
+            .catch(err => this.confirmDelete(itemId,false));
   }
 }

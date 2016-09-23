@@ -1,16 +1,19 @@
 <nav [hidden]="!submitted" class="navbar  navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
-      <button type="button" class="navbar-toggle " data-toggle="collapse" data-target="#mybuttons" aria-expanded="false">
+      <button type="button" class="navbar-toggle" (click)="onToggle()" data-toggle="collapse" data-target="#mybuttons" aria-expanded="false">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="#">FIT MY BUDGET</a>
+      <p class="navbar-text current-value pull-right hidden-lg hidden-md hidden-sm">
+          {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}
+        </p>
     </div>
-    <div class="collapse navbar-collapse" id="mybuttons">
+    <div [ngClass]="{'collapse':true, 'navbar-collapse':true, 'in':isOpen}" id="mybuttons">
       <ul class="nav navbar-nav navbar-right">
-        <li><span class="navbar-text current-value">Stai Spendendo: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</span></li>
+        <li><p class="navbar-text current-value">  Stai Spendendo: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</p></li>
         <li><a href="#" (click)="onEdit()"><span class="glyphicon glyphicon-refresh"></span> Ricomincio</a></li>
         <li><a href="#" (click)="onEdit()"><span class="glyphicon glyphicon-shopping-cart"></span> Acquisto</a></li>
       </ul>
@@ -39,7 +42,6 @@
          <div class="col-md-2 col-xs-1"><!--Column left--></div>
           <md-input autofocus type="number" placeholder="OGGI VOGLIO SPENDERE" class="col-xs-3 col-md-4" [(ngModel)]="model.value" >
             <span md-prefix>€&nbsp;</span>
-            <span md-suffix>.00</span>
           </md-input>
           <md-slide-toggle  class="col-xs-4 col-md-3" color="primary" style="">SOLO OFFERTE</md-slide-toggle>         
           <button md-button id="btn1" class="col-xs-2 col-md-1" (click)="onSubmit(undefined)"><span class="glyphicon glyphicon-search" style="color:#009688"></span> CERCA</button>
@@ -64,9 +66,8 @@
             <button id="list" class="btn btn-default btn-sm" (click)="listView = true;"><span class="glyphicon glyphicon-th-list"></span> List</button> 
             <button id="grid" class="btn btn-default btn-sm" (click)="listView = false;"><span class="glyphicon glyphicon-th"></span> Grid</button>
         </div>
-        <label class="pull-right">
-            <input type="checkbox" name="forceDel"  [(ngModel)]="model.forceDel"> elimina senza conferma
-        </label>
+        <button id="pin" [ngClass]="{'pull-right':true, 'btn':true,'btn-sm':true,'btn-default':!model.forceDel,'btn-danger':model.forceDel}" (click)="model.forceDel=!model.forceDel"><span class="glyphicon glyphicon-exclamation-sign"></span> elimina senza conferma</button>
+
     </div> <!-- toolbar -->
      <div [hidden]="!submitted" id="products" class="row list-group" >
        <div [ngClass]="{'item':true,'list-group-item':listView,'grid-group-item':!listView}" class="col-xl-2 col-md-3 col-sm-4 col-xs-6 col-xxs-12" *ngFor="let myItem of list">
@@ -74,22 +75,7 @@
                 <div class="img-container">
                   <img class="group list-group-image image-responsive" src="{{myItem.imgUrl}}" alt="" />
                 </div>
-                <div class="caption" *ngIf="myItem.deleting">
-                    <h4 class="group inner list-group-item-heading alert-danger">Do you want to remove it from the basket?</h4>  
-                    <div class="input-group number-spinner lead">
-                              <span class="input-group-btn">
-                                <button class="btn btn-default btn-danger" (click)="onDelConfirmBtn(myItem.sku,true)">Confirm</button>
-                              </span>
-                              <span class="input-group-btn">
-                                <button class="btn btn-default btn-success" (click)="onDelConfirmBtn(myItem.sku,false)">Revert</button>
-                              </span>
-                              <button (click)="onClick(this)">Alert</button>
-                    </div>
-                    <div>
-                        <br/><br/><br/>
-                    </div>
-                </div>
-                <div class="caption" *ngIf="!myItem.deleting">
+                <div class="caption">
                     <h4 class="group inner list-group-item-heading">{{myItem.name}}</h4>
                     <p class="group inner list-group-item-text">{{myItem.description | slice:0:100}}...</p>
                     <div class="row">
@@ -114,14 +100,10 @@
                             <button id="similar" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':model.similar[myItem.sku]!==similarity.Hate,'btn-danger':model.similar[myItem.sku]===similarity.Hate}" (click)="onSimilar(myItem.sku,false)"><span class="glyphicon glyphicon-ban-circle"></span></button>
                           </div>
                         </div>
-                        <div class="col-xs-3">                            
+                        <div class="col-xs-6">                            
                           <div class="btn-group">
                             <button id="delete" class="btn btn-default btn-sm" (click)="onDelete(myItem.sku)"><span class="glyphicon glyphicon-trash"></span></button> 
-                         </div>
-                        </div>
-                        <div class="col-xs-3">                            
-                          <div class="btn-group">
-                            <button id="pin" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':!model.pin[myItem.sku],'btn-success':model.pin[myItem.sku]}" (click)="onPin(myItem.sku)"><span class="glyphicon glyphicon-pushpin"></span></button> 
+                            <button id="pin" [ngClass]="{'btn':true,'btn-sm':true,'btn-default':!model.pin[myItem.sku],'btn-danger':model.pin[myItem.sku]}" (click)="onPin(myItem.sku)"><span class="glyphicon glyphicon-pushpin"></span></button> 
                          </div>
                         </div>
                     </div>
