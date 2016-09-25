@@ -13,9 +13,9 @@
     </div>
     <div [ngClass]="{'collapse':true, 'navbar-collapse':true, 'in':isOpen}" id="mybuttons">
       <ul class="nav navbar-nav navbar-right">
-        <li><p class="navbar-text current-value">  Stai Spendendo: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</p></li>
+        <li><p class="navbar-text current-value">Stai Spendendo: {{calcCurrentValue()|currency:'EUR':true:'1.2-2'}}</p></li>
         <li><a href="#" (click)="onEdit()"><span class="glyphicon glyphicon-refresh"></span> Ricomincio</a></li>
-        <li><a href="#" (click)="onEdit()"><span class="glyphicon glyphicon-shopping-cart"></span> Acquisto</a></li>
+        <li><a href="#" ><span class="glyphicon glyphicon-shopping-cart"></span> Acquisto</a></li>
       </ul>
     </div>
     </div>
@@ -72,6 +72,8 @@
      <div [hidden]="!submitted" id="products" class="row list-group" >
        <div [ngClass]="{'item':true,'list-group-item':listView,'grid-group-item':!listView}" class="col-xl-2 col-md-3 col-sm-4 col-xs-6 col-xxs-12" *ngFor="let myItem of list">
             <div class="thumbnail">
+                <div class="ribbon blue" *ngIf="myItem.special"><span>special</span></div>
+                <div class="ribbon red" *ngIf="myItem.discount"><span>-{{myItem.discount}}%</span></div>
                 <div class="img-container">
                   <img class="group list-group-image image-responsive" src="{{myItem.imgUrl}}" alt="" />
                 </div>
@@ -79,11 +81,11 @@
                     <h4 class="group inner list-group-item-heading">{{myItem.name}}</h4>
                     <p class="group inner list-group-item-text">{{myItem.description | slice:0:100}}...</p>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-6">
-                            <p class="lead">{{myItem.price | currency:'EUR':true:'1.2-2'}}</p>
+                        <div class="col-xs-12 col-sm-6 price">
+                            <p class="">{{myItem.price | currency:'EUR':true:'1.2-2'}}</p>
                         </div>
                         <div class="col-xs-12 col-sm-6">                     
-                            <div class="input-group number-spinner lead">
+                            <div class="input-group">
                               <span class="input-group-btn">
                                 <button class="btn btn-default btn-success" (click)="onQtyBtn(myItem.sku,-1)"><b>-</b></button>
                               </span>
@@ -93,6 +95,11 @@
                               </span>
                             </div>
                         
+                        </div>
+                        <div class="col-xs-12 other-prices">
+                            <span class="other-price" *ngIf="myItem.shipCost"><span class="glyphicon glyphicon-send"></span> {{myItem.shipCost | currency:'EUR':true:'1.2-2'}}</span>
+                            <span class="other-price" *ngIf="myItem.BOPIS"><span class="glyphicon glyphicon-home"></span> {{0 | currency:'EUR':true:'1.2-2'}}</span>
+                            
                         </div>
                         <div class="col-xs-6">                            
                           <div class="btn-group">

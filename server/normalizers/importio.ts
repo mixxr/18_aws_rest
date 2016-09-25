@@ -121,7 +121,13 @@ var saveJSON = function (obj:any){
       refresher.total++;
       if (item.Image !== undefined){
         let cItem:MsCartItem = new MsCartItem(undefined,item.name[0].text,getFloat(item.price,undefined));
-        cItem.discount = getText(item.discount);
+        cItem.discount = getFloat(item.discount,'%');
+        //cItem.discount = getText(item.discount);
+        if (cItem.discount === undefined)
+            {
+              let oprice:number = getFloat(item.oldPrice,undefined);
+              cItem.discount = (oprice)?(oprice - cItem.price)/oprice:undefined;
+            }      
         cItem.special = (item.specialLink!== undefined || cItem.discount !== undefined);
         cItem.currency = "EUR";
         cItem.imgUrl = getText(item.Image);
@@ -134,7 +140,6 @@ var saveJSON = function (obj:any){
         let p:number = getFloat(item.shippedPrice,' ');
         cItem.shipCost = (p>0)?p-cItem.price:0;
         cItem.BOPIS = (item.BOPISLink !== undefined);
-        cItem.discount = getFloat(item.discount,'%');
         cItem.category = getText(item.type);
         if (cItem.category && refresher.categories.indexOf(cItem.category) === -1) refresher.categories.push(cItem.category);
         cItem.refresh = refresher.mills;
