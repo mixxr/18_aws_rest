@@ -18,7 +18,7 @@ import {MsCartItem} from "./ms-cart-item";
 @Injectable()
 export class MsSearchSvc{
     constructor (private http: Http) {}
-    private svcUrl = 'http://192.168.1.100:8080/cart-items'; 
+    private svcUrl = 'http://localhost:8080/cart-items'; 
 
     createSingleRequest(b:MsBudget):SingleRequest{
         let request:SingleRequest = new SingleRequest();

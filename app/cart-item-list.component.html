@@ -82,7 +82,7 @@
                     <p class="group inner list-group-item-text">{{myItem.description | slice:0:100}}...</p>
                     <div class="row">
                         <div class="col-xs-12 col-sm-6 price">
-                            <p class="">{{myItem.price | currency:'EUR':true:'1.2-2'}}</p>
+                            <p class=""><b>{{myItem.price | currency:'EUR':true:'1.2-2'}}</b></p>
                         </div>
                         <div class="col-xs-12 col-sm-6">                     
                             <div class="input-group">
@@ -98,8 +98,8 @@
                         </div>
                         <div class="col-xs-12 other-prices">
                             <span class="other-price" *ngIf="myItem.shipCost"><span class="glyphicon glyphicon-send"></span> {{myItem.shipCost | currency:'EUR':true:'1.2-2'}}</span>
+                            <span class="other-price" *ngIf="!myItem.shipCost"><span class="glyphicon glyphicon-send"></span> {{0 | currency:'EUR':true:'1.2-2'}}</span>
                             <span class="other-price" *ngIf="myItem.BOPIS"><span class="glyphicon glyphicon-home"></span> {{0 | currency:'EUR':true:'1.2-2'}}</span>
-                            
                         </div>
                         <div class="col-xs-6">                            
                           <div class="btn-group">
