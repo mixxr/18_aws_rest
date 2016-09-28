@@ -25,11 +25,16 @@ class Refresher {
 var JSONStream = require('JSONStream'),
   es = require('event-stream');
 
-if (process.argv.length !== 4){
-  console.log("please use 'node <jsfile> <jsonfile> <Source>");
+if (process.argv.length !== 3){
+  console.log("please use 'node <jsfile> <jsonfile>");
   
   process.exit(1);
 }
+
+var fn = process.argv[2].substr(process.argv[2].lastIndexOf('\\')+1);
+var source = fn.split('-')[0];
+var defaultCat = fn.split('-')[1].split('.')[0];
+console.log(fn, source, defaultCat);
 
 var MongoClient = require('mongodb').MongoClient;  
 var collection:any = undefined;
@@ -43,15 +48,16 @@ MongoClient.connect(url, function (err:any, db:any) {
 
 //var counter = 0, n=0;
 //var cart:MsCartItem[] = [];
-var refresher:Refresher = new Refresher((new Date()).getTime(),[],process.argv[3]);
+var refresher:Refresher = new Refresher((new Date()).getTime(),[],source);
 
 var getStream = function () {
-    var jsonData = 'server/normalizers/files/'+process.argv[2], //'euronics-blueray-original.json',
+    var jsonData = process.argv[2], //'server/normalizers/files/'+'euronics-blueray-original.json',
         stream = fs.createReadStream(jsonData, {flags: 'r', encoding: 'utf8'}),
         parser = JSONStream.parse('*.*.*.*.group');
 
          stream.on('end', function() {
             console.log('stream ended. removing old...');
+            refresher.categories.push("null");
             collection.remove({"origin":refresher.origin, "category": { $in: refresher.categories }, "refresh":{"$lt":refresher.mills}},function(err:any,res:any){
               if (!err) refresher.deletes = res.result.n;
               else refresher.errors++;
@@ -135,22 +141,25 @@ var saveJSON = function (obj:any){
         console.log("sku:", cItem.sku);
          
         cItem.description = (getText(item.desc)||"").replace(/\r?\n|\r/g,"");
-        cItem.origin = process.argv[3];
+        cItem.origin = source;
         cItem.link = getText(item.url) || getText(item.buyLink);
         let p:number = getFloat(item.shippedPrice,' ');
         cItem.shipCost = (p>0)?p-cItem.price:0;
         cItem.BOPIS = (item.BOPISLink !== undefined);
-        cItem.category = getText(item.type);
+        cItem.category = getText(item.type) || defaultCat;
         if (cItem.category && refresher.categories.indexOf(cItem.category) === -1) refresher.categories.push(cItem.category);
         cItem.refresh = refresher.mills;
 
-        collection.findOneAndReplace({"sku":cItem.sku,"origin":cItem.origin},cItem, { upsert : true }, function(err:any,result:any){
-          if (!err){
-            refresher.updates += (result.lastErrorObject.updatedExisting)?1:0;
-            refresher.inserts += (result.lastErrorObject.updatedExisting)?0:1;
-          }else
-            refresher.errors++;        
-        });
+        if (cItem.price > 0){
+          collection.findOneAndReplace({"sku":cItem.sku,"origin":cItem.origin},cItem, { upsert : true }, function(err:any,result:any){
+            if (!err){
+              refresher.updates += (result.lastErrorObject.updatedExisting)?1:0;
+              refresher.inserts += (result.lastErrorObject.updatedExisting)?0:1;
+            }else
+              refresher.errors++;        
+          });
+        }else // price > 0
+          refresher.incomplete++;
       }else
         refresher.incomplete++;
     }); // forEach
