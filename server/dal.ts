@@ -6,7 +6,7 @@ export class DAL<T>{
     _db:mongodb.Db;
     _collection:mongodb.Collection;
 
-    constructor(url:string, coll:string, activeServer:any){
+    constructor(url:string, coll:string, server:any){
         this._url = url;
         var obj = this;
         this.mongoClient.connect(url, function (err:any, db:any) {
@@ -16,7 +16,7 @@ export class DAL<T>{
                 obj._db = db;
                 obj._collection = db.collection(coll);  
 
-                activeServer();
+                server.listen();
         });
     }
 
