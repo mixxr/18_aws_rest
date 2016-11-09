@@ -10,7 +10,7 @@
     "postinstall": "typings install",
     "tsc": "tsc --rootDir . --outDir dist",
     "tsc:w": "tsc -w --rootDir . --outDir dist",
-    "tsc:s": "tsc --removeComments --module commonjs --target ES5 --outDir dist/server server/server.ts",
+    "tsc:s": "tsc --removeComments --module commonjs --target ES5 --outDir dist/server server/main.ts",
     "typings": "typings",
     "fix-express": "typings install dt~express dt~serve-static dt~express-serve-static-core dt~mime --global",
     "webdriver:update": "webdriver-manager update"
@@ -43,6 +43,7 @@
     "express": "^4.14.0",
     "hammerjs": "^2.0.8",
     "jsonfile": "^2.3.1",
+    "line-by-line": "^0.1.5",
     "mongodb": "^2.2.10",
     "ng2-material": "^0.6.1",
     "reflect-metadata": "^0.1.3",
